@@ -39,7 +39,8 @@ module "ecs_platform" {
   interface_vpc_endpoints = var.interface_vpc_endpoints
   route_table_ids         = [module.vpc.default_route_table_id]
 
-  naming_prefix              = local.naming_prefix
+  logical_product_family     = var.logical_product_family
+  logical_product_service    = local.logical_product_service
   vpce_security_group        = var.vpce_security_group
   region                     = var.region
   environment                = var.environment

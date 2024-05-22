@@ -1,4 +1,4 @@
-# tf-aws-wrapper_module-ecs_appmesh_platform
+# tf-aws-module_collection-ecs_appmesh_platform
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC_BY--NC--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
@@ -142,19 +142,19 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.67.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.50.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_security_group_vpce"></a> [security\_group\_vpce](#module\_security\_group\_vpce) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
-| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | git::https://github.com/nexient-llc/tf-module-resource_name.git | 0.1.0 |
+| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git | 1.0.0 |
 | <a name="module_ecs"></a> [ecs](#module\_ecs) | terraform-aws-modules/ecs/aws | ~> 4.1.3 |
 | <a name="module_interface_endpoints"></a> [interface\_endpoints](#module\_interface\_endpoints) | terraform-aws-modules/vpc/aws//modules/vpc-endpoints | ~> 3.19.0 |
 | <a name="module_gateway_endpoints"></a> [gateway\_endpoints](#module\_gateway\_endpoints) | terraform-aws-modules/vpc/aws//modules/vpc-endpoints | ~> 3.19.0 |
-| <a name="module_namespace"></a> [namespace](#module\_namespace) | git::https://github.com/nexient-llc/tf-aws-module-private_dns_namespace.git | 0.1.0 |
-| <a name="module_app_mesh"></a> [app\_mesh](#module\_app\_mesh) | git::https://github.com/nexient-llc/tf-aws-module-appmesh.git | 0.1.0 |
+| <a name="module_namespace"></a> [namespace](#module\_namespace) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-private_dns_namespace.git | 1.0.0 |
+| <a name="module_app_mesh"></a> [app\_mesh](#module\_app\_mesh) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-appmesh.git | 1.0.0 |
 
 ## Resources
 
@@ -166,12 +166,13 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_naming_prefix"></a> [naming\_prefix](#input\_naming\_prefix) | Prefix for the provisioned resources. | `string` | `"platform"` | no |
+| <a name="input_logical_product_family"></a> [logical\_product\_family](#input\_logical\_product\_family) | (Required) Name of the product family for which the resource is created.<br>    Example: org\_name, department\_name. | `string` | `"launch"` | no |
+| <a name="input_logical_product_service"></a> [logical\_product\_service](#input\_logical\_product\_service) | (Required) Name of the product service for which the resource is created.<br>    For example, backend, frontend, middleware etc. | `string` | `"ecs"` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment in which the resource should be provisioned like dev, qa, prod etc. | `string` | `"dev"` | no |
 | <a name="input_environment_number"></a> [environment\_number](#input\_environment\_number) | The environment count for the respective environment. Defaults to 000. Increments in value of 1 | `string` | `"000"` | no |
 | <a name="input_resource_number"></a> [resource\_number](#input\_resource\_number) | The resource count for the respective resource. Defaults to 000. Increments in value of 1 | `string` | `"000"` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region in which the infra needs to be provisioned | `string` | `"us-east-2"` | no |
-| <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-module-resource\_name to generate resource names | <pre>map(object(<br>    {<br>      name       = string<br>      max_length = optional(number, 60)<br>    }<br>  ))</pre> | <pre>{<br>  "app_mesh": {<br>    "max_length": 60,<br>    "name": "mesh"<br>  },<br>  "ecs_cluster": {<br>    "max_length": 60,<br>    "name": "fargate"<br>  },<br>  "namespace": {<br>    "max_length": 60,<br>    "name": "ns"<br>  },<br>  "vpce_sg": {<br>    "max_length": 60,<br>    "name": "vpce-sg"<br>  }<br>}</pre> | no |
+| <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-launch-module\_library-resource\_name to generate resource names | <pre>map(object(<br>    {<br>      name       = string<br>      max_length = optional(number, 60)<br>    }<br>  ))</pre> | <pre>{<br>  "app_mesh": {<br>    "max_length": 60,<br>    "name": "mesh"<br>  },<br>  "ecs_cluster": {<br>    "max_length": 60,<br>    "name": "fargate"<br>  },<br>  "namespace": {<br>    "max_length": 60,<br>    "name": "ns"<br>  },<br>  "vpce_sg": {<br>    "max_length": 60,<br>    "name": "vpcesg"<br>  }<br>}</pre> | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The VPC ID of the VPC where infrastructure will be provisioned | `string` | n/a | yes |
 | <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | List of private subnets | `list(string)` | n/a | yes |
 | <a name="input_public_subnets"></a> [public\_subnets](#input\_public\_subnets) | List of public subnets | `list(string)` | `[]` | no |

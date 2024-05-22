@@ -34,17 +34,18 @@ module "security_group_vpce" {
 }
 
 module "resource_names" {
-  source = "git::https://github.com/nexient-llc/tf-module-resource_name.git?ref=0.1.0"
+  source = "git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git?ref=1.0.0"
 
   for_each = local.resource_names_map
 
-  logical_product_name = var.naming_prefix
-  region               = join("", split("-", var.region))
-  class_env            = var.environment
-  cloud_resource_type  = each.value.name
-  instance_env         = var.environment_number
-  instance_resource    = var.resource_number
-  maximum_length       = each.value.max_length
+  logical_product_family  = var.logical_product_family
+  logical_product_service = var.logical_product_service
+  region                  = join("", split("-", var.region))
+  class_env               = var.environment
+  cloud_resource_type     = each.value.name
+  instance_env            = var.environment_number
+  instance_resource       = var.resource_number
+  maximum_length          = each.value.max_length
 }
 
 # ECS Cluster
@@ -107,10 +108,10 @@ module "gateway_endpoints" {
 
 # Cloud Map Namespace
 module "namespace" {
-  source = "git::https://github.com/nexient-llc/tf-aws-module-private_dns_namespace.git?ref=0.1.0"
+  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-private_dns_namespace.git?ref=1.0.0"
 
   name        = var.namespace_name
-  description = length(var.namespace_description) > 0 ? var.namespace_description : "Cloud Map Namespace for ${var.naming_prefix}"
+  description = length(var.namespace_description) > 0 ? var.namespace_description : "Cloud Map Namespace for ${var.logical_product_family}-${var.logical_product_service}"
   vpc_id      = data.aws_vpc.vpc.id
 
   tags = merge(
@@ -123,7 +124,7 @@ module "namespace" {
 }
 
 module "app_mesh" {
-  source = "git::https://github.com/nexient-llc/tf-aws-module-appmesh.git?ref=0.1.0"
+  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-appmesh.git?ref=1.0.0"
 
   name                    = module.resource_names["app_mesh"].standard
   spec_egress_filter_type = "ALLOW_ALL"

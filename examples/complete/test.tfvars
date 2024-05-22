@@ -1,4 +1,5 @@
-naming_prefix = "demo"
+logical_product_family  = "terratest"
+logical_product_service = "ecs_appmesh"
 
 vpce_security_group = {
   ingress_rules       = ["https-443-tcp", "http-80-tcp"]
