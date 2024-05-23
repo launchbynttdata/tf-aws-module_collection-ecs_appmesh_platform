@@ -50,16 +50,19 @@ variable "environment" {
 
 variable "environment_number" {
   description = "The environment count for the respective environment. Defaults to 000. Increments in value of 1"
+  type        = string
   default     = "000"
 }
 
 variable "resource_number" {
   description = "The resource count for the respective resource. Defaults to 000. Increments in value of 1"
+  type        = string
   default     = "000"
 }
 
 variable "region" {
   description = "AWS Region in which the infra needs to be provisioned"
+  type        = string
   default     = "us-east-2"
 }
 
@@ -100,12 +103,6 @@ variable "vpc_id" {
 variable "private_subnets" {
   description = "List of private subnets"
   type        = list(string)
-}
-
-variable "public_subnets" {
-  description = "List of public subnets"
-  type        = list(string)
-  default     = []
 }
 
 ### VPC Endpoints related variables
@@ -157,6 +154,7 @@ variable "vpce_security_group" {
 ### ECS Cluster related variables
 variable "container_insights_enabled" {
   description = "Whether to enable container Insights or not"
+  type        = bool
   default     = true
 }
 
