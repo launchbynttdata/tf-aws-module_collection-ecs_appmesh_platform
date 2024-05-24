@@ -66,6 +66,7 @@ provider "random" {}
 | <a name="output_random_int"></a> [random\_int](#output\_random\_int) | Random Int postfix |
 | <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | VPC Id for the example |
 | <a name="output_resource_names"></a> [resource\_names](#output\_resource\_names) | n/a |
+| <a name="output_vpce_sg_id"></a> [vpce\_sg\_id](#output\_vpce\_sg\_id) | The ID of the VPC Endpoint Security Group |
 | <a name="output_namespace_name"></a> [namespace\_name](#output\_namespace\_name) | # CloudMap related outputs |
 | <a name="output_namespace_id"></a> [namespace\_id](#output\_namespace\_id) | ID of the Cloud Map Namespace |
 | <a name="output_namespace_arn"></a> [namespace\_arn](#output\_namespace\_arn) | ARN of the Cloud Map Namespace |
