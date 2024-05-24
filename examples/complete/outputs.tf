@@ -20,6 +20,10 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
+output "resource_names" {
+  value = module.ecs_platform.resource_names
+}
+
 ## CloudMap related outputs
 output "namespace_name" {
   value = module.ecs_platform.namespace_name
