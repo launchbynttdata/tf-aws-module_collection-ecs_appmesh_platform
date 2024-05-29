@@ -20,6 +20,15 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
+output "resource_names" {
+  value = module.ecs_platform.resource_names
+}
+
+output "vpce_sg_id" {
+  description = "The ID of the VPC Endpoint Security Group"
+  value       = module.ecs_platform.vpce_sg_id
+}
+
 ## CloudMap related outputs
 output "namespace_name" {
   value = module.ecs_platform.namespace_name
