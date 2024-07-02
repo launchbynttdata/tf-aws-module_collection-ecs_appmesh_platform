@@ -149,12 +149,12 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_security_group_vpce"></a> [security\_group\_vpce](#module\_security\_group\_vpce) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
-| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git | 1.0.0 |
+| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 1.0 |
 | <a name="module_ecs"></a> [ecs](#module\_ecs) | terraform-aws-modules/ecs/aws | ~> 4.1.3 |
 | <a name="module_interface_endpoints"></a> [interface\_endpoints](#module\_interface\_endpoints) | terraform-aws-modules/vpc/aws//modules/vpc-endpoints | ~> 3.19.0 |
 | <a name="module_gateway_endpoints"></a> [gateway\_endpoints](#module\_gateway\_endpoints) | terraform-aws-modules/vpc/aws//modules/vpc-endpoints | ~> 3.19.0 |
-| <a name="module_namespace"></a> [namespace](#module\_namespace) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-private_dns_namespace.git | 1.0.0 |
-| <a name="module_app_mesh"></a> [app\_mesh](#module\_app\_mesh) | git::https://github.com/launchbynttdata/tf-aws-module_primitive-appmesh.git | 1.0.0 |
+| <a name="module_namespace"></a> [namespace](#module\_namespace) | terraform.registry.launch.nttdata.com/module_primitive/private_dns_namespace/aws | ~> 1.0 |
+| <a name="module_app_mesh"></a> [app\_mesh](#module\_app\_mesh) | terraform.registry.launch.nttdata.com/module_primitive/appmesh/aws | ~> 1.0 |
 
 ## Resources
 

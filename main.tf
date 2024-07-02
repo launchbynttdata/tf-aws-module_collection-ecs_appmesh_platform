@@ -34,7 +34,8 @@ module "security_group_vpce" {
 }
 
 module "resource_names" {
-  source = "git::https://github.com/launchbynttdata/tf-launch-module_library-resource_name.git?ref=1.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_library/resource_name/launch"
+  version = "~> 1.0"
 
   for_each = local.resource_names_map
 
@@ -108,7 +109,8 @@ module "gateway_endpoints" {
 
 # Cloud Map Namespace
 module "namespace" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-private_dns_namespace.git?ref=1.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/private_dns_namespace/aws"
+  version = "~> 1.0"
 
   name        = var.namespace_name
   description = length(var.namespace_description) > 0 ? var.namespace_description : "Cloud Map Namespace for ${var.logical_product_family}-${var.logical_product_service}"
@@ -124,7 +126,8 @@ module "namespace" {
 }
 
 module "app_mesh" {
-  source = "git::https://github.com/launchbynttdata/tf-aws-module_primitive-appmesh.git?ref=1.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/appmesh/aws"
+  version = "~> 1.0"
 
   name                    = module.resource_names["app_mesh"].standard
   spec_egress_filter_type = "ALLOW_ALL"
