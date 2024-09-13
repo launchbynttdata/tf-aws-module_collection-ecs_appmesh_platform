@@ -95,14 +95,44 @@ variable "resource_names_map" {
 }
 
 ### VPC related variables
+variable "create_vpc" {
+  description = "Whether to create the VPC or not. Set this value to `true` to create a new VPC for ECS cluster. Default is `false`"
+  type        = bool
+  default     = false
+}
+
 variable "vpc_id" {
   description = "The VPC ID of the VPC where infrastructure will be provisioned"
   type        = string
+  default     = null
 }
 
 variable "private_subnets" {
-  description = "List of private subnets"
+  description = "List of private subnets. Required when create_vpc=false. Will be ignored when create_vpc=true"
   type        = list(string)
+  default     = []
+}
+
+variable "vpc" {
+  description = <<EOT
+    VPC related variables. Required when create_vpc=true.
+    Public subnets are required when user wants to provision internet facing ALBs also when enable_nat_gateway=true,
+    If single_nat_gateway=true, 1 Nat Gateway will be created, else if one_nat_gateway_per_az=true, 1 Nat Gateway per AZ
+    will be created, else that many Nat gateways will be created as the number of max(public, private) subnets
+  EOT
+  type = object({
+    vpc_name                       = string
+    vpc_cidr                       = string
+    private_subnet_cidr_ranges     = list(string)
+    public_subnet_cidr_ranges      = optional(list(string), [])
+    availability_zones             = list(string)
+    default_security_group_ingress = optional(list(map(string)), [])
+    enable_nat_gateway             = optional(bool, false)
+    single_nat_gateway             = optional(bool, true)
+    one_nat_gateway_per_az         = optional(bool, false)
+  })
+
+  default = null
 }
 
 ### VPC Endpoints related variables
@@ -120,7 +150,11 @@ variable "gateway_vpc_endpoints" {
 }
 
 variable "interface_vpc_endpoints" {
-  description = "List of VPC endpoints to be created"
+  description = <<EOT
+    List of VPC endpoints to be created. Must create endpoints for all AWS services that the ECS services
+    needs to communicate over the private network. For example: ECR, CloudWatch, AppMesh etc. In absence of
+    NAT gateway, pull images from ECR too needs private endpoint.
+  EOT
   type = map(object({
     service_name        = string
     subnet_names        = optional(list(string), [])
@@ -138,7 +172,7 @@ variable "route_table_ids" {
 }
 
 variable "vpce_security_group" {
-  description = "Default security group to be attached to all VPC endpoints"
+  description = "Default security group to be attached to all VPC endpoints. Must allow relevant ingress and egress traffic."
   type = object({
     ingress_rules            = optional(list(string))
     ingress_cidr_blocks      = optional(list(string))
@@ -153,14 +187,17 @@ variable "vpce_security_group" {
 
 ### ECS Cluster related variables
 variable "container_insights_enabled" {
-  description = "Whether to enable container Insights or not"
+  description = "Whether to enable container Insights or not. Default is true"
   type        = bool
   default     = true
 }
 
 ### Cloud Map Namespace related variables
 variable "namespace_name" {
-  description = "The Cloud Map namespace to be created. Should be a valid domain name. Example test.example.local"
+  description = <<EOT
+    The Cloud Map namespace to be created. Should be a valid domain name. Example test.example.local. Mostly used for
+    service discovery and AppMesh
+  EOT
   type        = string
   default     = ""
 }
