@@ -6,6 +6,11 @@
 ## Overview
 
 This terraform module creates a ECS Platform with App Mesh enabled. The following resources are created
+- VPC (optional)
+  - Private Subnets
+  - Public Subnets
+  - Nat Gateway (optional)
+  - Route Tables (optional)
 - VPC endpoints (optional)
 - VPC endpoint Security group (optional)
 - ECS Fargate Cluster
@@ -13,8 +18,9 @@ This terraform module creates a ECS Platform with App Mesh enabled. The followin
 - App Mesh
 
 ## Usage
-A sample variable file `example.tfvars` is available in the root directory which can be used to test this module. User needs to follow the below steps to execute this module
-1. Update the `example.tfvars` to manually enter values for all fields marked within `<>` to make the variable file usable
+
+A sample variable file [example.tfvars](./sample-tfvars/cluster-with-vpc.tfvars) is available in the root directory which can be used to test this module. User needs to follow the below steps to execute this module
+1. Update the `sample-tfvars/example.tfvars` to manually enter values for all fields marked within `<>` to make the variable file usable
 2. Create a file `provider.tf` with the below contents
    ```
     provider "aws" {
@@ -127,40 +133,34 @@ If `make check` target is successful, developer is good to commit the code to pr
 - runs `terratest`. This is integration test suit.
 - runs `opa` tests
 
-# Know Issues
-Currently, the `encrypt at transit` is not supported in terraform. There is an open issue for this logged with Hashicorp - https://github.com/hashicorp/terraform-provider-aws/pull/26987
-
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0, <= 1.5.5 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 3.28.0 |
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.50.0 |
+No providers.
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_security_group_vpce"></a> [security\_group\_vpce](#module\_security\_group\_vpce) | terraform-aws-modules/security-group/aws | ~> 4.17.1 |
-| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 1.0 |
+| <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.0 |
 | <a name="module_ecs"></a> [ecs](#module\_ecs) | terraform-aws-modules/ecs/aws | ~> 4.1.3 |
 | <a name="module_interface_endpoints"></a> [interface\_endpoints](#module\_interface\_endpoints) | terraform-aws-modules/vpc/aws//modules/vpc-endpoints | ~> 3.19.0 |
 | <a name="module_gateway_endpoints"></a> [gateway\_endpoints](#module\_gateway\_endpoints) | terraform-aws-modules/vpc/aws//modules/vpc-endpoints | ~> 3.19.0 |
 | <a name="module_namespace"></a> [namespace](#module\_namespace) | terraform.registry.launch.nttdata.com/module_primitive/private_dns_namespace/aws | ~> 1.0 |
 | <a name="module_app_mesh"></a> [app\_mesh](#module\_app\_mesh) | terraform.registry.launch.nttdata.com/module_primitive/appmesh/aws | ~> 1.0 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.8.1 |
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [aws_vpc.vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
+No resources.
 
 ## Inputs
 
@@ -173,14 +173,16 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="input_resource_number"></a> [resource\_number](#input\_resource\_number) | The resource count for the respective resource. Defaults to 000. Increments in value of 1 | `string` | `"000"` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region in which the infra needs to be provisioned | `string` | `"us-east-2"` | no |
 | <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-launch-module\_library-resource\_name to generate resource names | <pre>map(object(<br>    {<br>      name       = string<br>      max_length = optional(number, 60)<br>    }<br>  ))</pre> | <pre>{<br>  "app_mesh": {<br>    "max_length": 60,<br>    "name": "mesh"<br>  },<br>  "ecs_cluster": {<br>    "max_length": 60,<br>    "name": "fargate"<br>  },<br>  "namespace": {<br>    "max_length": 60,<br>    "name": "ns"<br>  },<br>  "vpce_sg": {<br>    "max_length": 60,<br>    "name": "vpcesg"<br>  }<br>}</pre> | no |
-| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The VPC ID of the VPC where infrastructure will be provisioned | `string` | n/a | yes |
-| <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | List of private subnets | `list(string)` | n/a | yes |
+| <a name="input_create_vpc"></a> [create\_vpc](#input\_create\_vpc) | Whether to create the VPC or not. Set this value to `true` to create a new VPC for ECS cluster. Default is `false` | `bool` | `false` | no |
+| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The VPC ID of the VPC where infrastructure will be provisioned | `string` | `null` | no |
+| <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | List of private subnets. Required when create\_vpc=false. Will be ignored when create\_vpc=true | `list(string)` | `[]` | no |
+| <a name="input_vpc"></a> [vpc](#input\_vpc) | VPC related variables. Required when create\_vpc=true.<br>    Public subnets are required when user wants to provision internet facing ALBs also when enable\_nat\_gateway=true,<br>    If single\_nat\_gateway=true, 1 Nat Gateway will be created, else if one\_nat\_gateway\_per\_az=true, 1 Nat Gateway per AZ<br>    will be created, else that many Nat gateways will be created as the number of max(public, private) subnets | <pre>object({<br>    vpc_name                       = string<br>    vpc_cidr                       = string<br>    private_subnet_cidr_ranges     = list(string)<br>    public_subnet_cidr_ranges      = optional(list(string), [])<br>    availability_zones             = list(string)<br>    default_security_group_ingress = optional(list(map(string)), [])<br>    enable_nat_gateway             = optional(bool, false)<br>    single_nat_gateway             = optional(bool, true)<br>    one_nat_gateway_per_az         = optional(bool, false)<br>  })</pre> | `null` | no |
 | <a name="input_gateway_vpc_endpoints"></a> [gateway\_vpc\_endpoints](#input\_gateway\_vpc\_endpoints) | List of VPC endpoints to be created. AWS currently only supports S3 and DynamoDB gateway interfaces | <pre>map(object({<br>    service_name        = string<br>    subnet_names        = optional(list(string), [])<br>    private_dns_enabled = optional(bool, false)<br>    route_table_ids     = optional(list(string))<br>    tags                = optional(map(string), {})<br>  }))</pre> | `{}` | no |
-| <a name="input_interface_vpc_endpoints"></a> [interface\_vpc\_endpoints](#input\_interface\_vpc\_endpoints) | List of VPC endpoints to be created | <pre>map(object({<br>    service_name        = string<br>    subnet_names        = optional(list(string), [])<br>    private_dns_enabled = optional(bool, false)<br>    tags                = optional(map(string), {})<br>  }))</pre> | `{}` | no |
+| <a name="input_interface_vpc_endpoints"></a> [interface\_vpc\_endpoints](#input\_interface\_vpc\_endpoints) | List of VPC endpoints to be created. Must create endpoints for all AWS services that the ECS services<br>    needs to communicate over the private network. For example: ECR, CloudWatch, AppMesh etc. In absence of<br>    NAT gateway, pull images from ECR too needs private endpoint. | <pre>map(object({<br>    service_name        = string<br>    subnet_names        = optional(list(string), [])<br>    private_dns_enabled = optional(bool, false)<br>    tags                = optional(map(string), {})<br>  }))</pre> | `{}` | no |
 | <a name="input_route_table_ids"></a> [route\_table\_ids](#input\_route\_table\_ids) | List of route tables for Gateway VPC endpoints | `list(string)` | `[]` | no |
-| <a name="input_vpce_security_group"></a> [vpce\_security\_group](#input\_vpce\_security\_group) | Default security group to be attached to all VPC endpoints | <pre>object({<br>    ingress_rules            = optional(list(string))<br>    ingress_cidr_blocks      = optional(list(string))<br>    ingress_with_cidr_blocks = optional(list(map(string)))<br>    egress_rules             = optional(list(string))<br>    egress_cidr_blocks       = optional(list(string))<br>    egress_with_cidr_blocks  = optional(list(map(string)))<br>  })</pre> | `null` | no |
-| <a name="input_container_insights_enabled"></a> [container\_insights\_enabled](#input\_container\_insights\_enabled) | Whether to enable container Insights or not | `bool` | `true` | no |
-| <a name="input_namespace_name"></a> [namespace\_name](#input\_namespace\_name) | The Cloud Map namespace to be created. Should be a valid domain name. Example test.example.local | `string` | `""` | no |
+| <a name="input_vpce_security_group"></a> [vpce\_security\_group](#input\_vpce\_security\_group) | Default security group to be attached to all VPC endpoints. Must allow relevant ingress and egress traffic. | <pre>object({<br>    ingress_rules            = optional(list(string))<br>    ingress_cidr_blocks      = optional(list(string))<br>    ingress_with_cidr_blocks = optional(list(map(string)))<br>    egress_rules             = optional(list(string))<br>    egress_cidr_blocks       = optional(list(string))<br>    egress_with_cidr_blocks  = optional(list(map(string)))<br>  })</pre> | `null` | no |
+| <a name="input_container_insights_enabled"></a> [container\_insights\_enabled](#input\_container\_insights\_enabled) | Whether to enable container Insights or not. Default is true | `bool` | `true` | no |
+| <a name="input_namespace_name"></a> [namespace\_name](#input\_namespace\_name) | The Cloud Map namespace to be created. Should be a valid domain name. Example test.example.local. Mostly used for<br>    service discovery and AppMesh | `string` | `""` | no |
 | <a name="input_namespace_description"></a> [namespace\_description](#input\_namespace\_description) | Description for the Cloud Map Namespace | `string` | `""` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of custom tags to be attached to resources | `map(string)` | `{}` | no |
 
@@ -199,4 +201,9 @@ Currently, the `encrypt at transit` is not supported in terraform. There is an o
 | <a name="output_app_mesh_id"></a> [app\_mesh\_id](#output\_app\_mesh\_id) | ID of the App Mesh |
 | <a name="output_app_mesh_arn"></a> [app\_mesh\_arn](#output\_app\_mesh\_arn) | ARN of the App Mesh |
 | <a name="output_fargate_arn"></a> [fargate\_arn](#output\_fargate\_arn) | The ARN of the ECS fargate cluster |
+| <a name="output_vpc_id"></a> [vpc\_id](#output\_vpc\_id) | ID of the VPC |
+| <a name="output_private_subnet_ids"></a> [private\_subnet\_ids](#output\_private\_subnet\_ids) | IDs of the private subnets |
+| <a name="output_public_subnet_ids"></a> [public\_subnet\_ids](#output\_public\_subnet\_ids) | List of IDs of public subnets |
+| <a name="output_nat_gateway_ids"></a> [nat\_gateway\_ids](#output\_nat\_gateway\_ids) | List of IDs of NAT Gateways |
+| <a name="output_nat_gateway_public_ips"></a> [nat\_gateway\_public\_ips](#output\_nat\_gateway\_public\_ips) | List of NAT Gateway Public IPs |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

@@ -70,3 +70,30 @@ output "fargate_arn" {
   description = "The ARN of the ECS fargate cluster"
   value       = module.ecs.cluster_arn
 }
+
+## VPC related outputs
+
+output "vpc_id" {
+  description = "ID of the VPC"
+  value       = var.create_vpc ? module.vpc[0].vpc_id : var.vpc_id
+}
+
+output "private_subnet_ids" {
+  description = "IDs of the private subnets"
+  value       = var.create_vpc ? module.vpc[0].private_subnets : var.private_subnets
+}
+
+output "public_subnet_ids" {
+  description = "List of IDs of public subnets"
+  value       = var.create_vpc ? module.vpc[0].public_subnets : []
+}
+
+output "nat_gateway_ids" {
+  description = "List of IDs of NAT Gateways"
+  value       = var.create_vpc && try(var.vpc.enable_nat_gateway, false) ? module.vpc[0].natgw_ids : []
+}
+
+output "nat_gateway_public_ips" {
+  description = "List of NAT Gateway Public IPs"
+  value       = var.create_vpc && try(var.vpc.enable_nat_gateway, false) ? module.vpc[0].nat_public_ips : []
+}
